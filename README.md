@@ -4,7 +4,7 @@ R1-distilled SFT (Supervised Fine-Tuning) for Qwen 2.5, derived from [Qwen's off
 
 ## Overview
 
-This project implements LoRA fine-tuning for the Qwen-2.5-1.5B-Chat model using DeepSpeed with multi-GPU support. The implementation focuses on R1-style training using high-quality instruction datasets.
+This project implements LoRA fine-tuning for the Qwen-2.5-1.5B-Chat model using DeepSpeed with multi-GPU support. Tongyi Qianwen is a large language model developed by Alibaba Cloud based on the Transformer architecture, trained on diverse pre-training data including internet text, specialized books, and code. This implementation focuses on R1-style training using high-quality instruction datasets.
 
 ## Features
 
@@ -14,15 +14,17 @@ This project implements LoRA fine-tuning for the Qwen-2.5-1.5B-Chat model using 
 - Special token handling for thought process
 - BF16 mixed precision training
 - Cosine learning rate scheduling
+- Gradient accumulation for effective batch size control
+- Checkpoint saving and management
+- Warm-up ratio optimization
 
-## Prerequisites
+## Model Architecture
 
-- Python 3.11+ (Recommended for optimal performance)
-- Multi-GPU platform recommended for efficient training
-- PyTorch with CUDA support
-- Transformers
-- DeepSpeed
-- At least 2 CUDA-capable GPUs (16+ GB VRAM each)
+The base model used is Qwen2.5-1.5B-Instruct, which provides:
+- Strong base capabilities from extensive pre-training
+- Good balance between model size and performance
+- Built-in chat/instruction following capabilities
+- Support for context window up to 8192 tokens
 
 ## Supported Datasets
 
@@ -32,64 +34,56 @@ The training supports various R1-style datasets including:
 - NovaSky-AI/Sky-T1_data_17k
 - open-thoughts/OpenThoughts-114k
 
-You can merge multiple datasets for better results and reduced overfitting.
+You can merge multiple datasets for better results and reduced overfitting. The datasets are designed to enhance:
+- Instruction following capabilities
+- Reasoning and thought process
+- Response quality and coherence
+- Task-specific performance
 
-## Setup
+## Training Guide
 
-1. Download the base model:
-```bash
-huggingface-cli download "Qwen/Qwen2.5-1.5B-Instruct" --local-dir qwen2.5-1.5b-ins
-```
+For detailed training instructions and configurations, please refer to the Jupyter notebook:
+`finetune_lora_multi_gpu.ipynb`
 
-2. Download your chosen dataset:
-```bash
-huggingface-cli download "bespokelabs/Bespoke-Stratos-17k" --local-dir dataset_stratos_17k --repo-type dataset
-```
+The notebook provides comprehensive guidance on:
+- Model and dataset preparation
+- Special token handling and tokenizer configuration
+- Training configuration with DeepSpeed
+- Multi-GPU setup and optimization
+- Hyperparameter tuning suggestions
+- Gradient accumulation strategies
+- Learning rate scheduling
+- Model saving and checkpointing
+- Memory optimization techniques
+- Dataset processing and preparation
 
-3. (Optional) Process the dataset to handle special tokens using:
-```bash
-python simplify_dataset.py
-```
+Key training aspects covered in the notebook:
+1. Base model download and setup
+2. Dataset preprocessing options
+3. Special token integration
+4. DeepSpeed configuration
+5. Training launch and monitoring
+6. Model merging and saving
+7. Performance optimization tips
 
-## Training
-
-Launch training with DeepSpeed using:
-
-```bash
-torchrun --nproc_per_node 2 --nnodes 1 --node_rank 0 --master_addr localhost --master_port 6601 finetune.py \
-    --model_name_or_path "qwen2.5-1.5b-ins" \
-    --data_path "optimized_dataset" \
-    --bf16 True \
-    --output_dir "output_qwen" \
-    --num_train_epochs 5 \
-    --per_device_train_batch_size 1 \
-    --per_device_eval_batch_size 1 \
-    --gradient_accumulation_steps 16 \
-    --evaluation_strategy "no" \
-    --save_strategy "steps" \
-    --save_steps 500 \
-    --save_total_limit 3 \
-    --learning_rate 1e-5 \
-    --weight_decay 0.1 \
-    --warmup_ratio 0.01 \
-    --lr_scheduler_type "cosine" \
-    --logging_steps 1
-```
-
-Key training parameters can be adjusted based on your hardware and requirements:
-- `nproc_per_node`: Number of GPUs to use
-- `per_device_train_batch_size`: Batch size per GPU
-- `gradient_accumulation_steps`: Steps before gradient update
-- `learning_rate`: Training learning rate
-- `num_train_epochs`: Number of training epochs
-
-## Special Token Handling
+## Special Token Support
 
 The model supports special tokens for thought process:
 - `<|begin_of_thought|>`
 - `<|end_of_thought|>`
 
-These can be added either through the HuggingFace Tokenizer API or by manually editing the tokenizer configuration.
+These tokens can be integrated through:
+1. HuggingFace Tokenizer API
+2. Manual tokenizer configuration
+3. Automated token addition during training setup
+
+## Hardware Recommendations
+
+For optimal training performance:
+- Multiple CUDA-capable GPUs (16+ GB VRAM each)
+- High-speed GPU interconnect for multi-GPU training
+- Sufficient system RAM for dataset handling
+- Fast storage for checkpoint saving
 
 ## License
 
