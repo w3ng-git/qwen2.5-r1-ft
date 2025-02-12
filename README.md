@@ -13,12 +13,8 @@ This project implements LoRA fine-tuning for the Qwen-2.5-1.5B-Chat model using 
 - Multi-GPU training support with DeepSpeed
 - LoRA fine-tuning implementation
 - Support for R1-style instruction datasets
-- Special token handling for thought process
+- Special token handling for thought process **special tokens**
 - BF16 mixed precision training
-- Cosine learning rate scheduling
-- Gradient accumulation for effective batch size control
-- Checkpoint saving and management
-- Warm-up ratio optimization
 
 ## Model Architecture
 
