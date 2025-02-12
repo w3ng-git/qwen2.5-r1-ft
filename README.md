@@ -2,6 +2,8 @@
 
 R1-distilled SFT (Supervised Fine-Tuning) for Qwen 2.5, derived from [Qwen's official fine-tuning example](https://github.com/QwenLM/Qwen/blob/main/recipes/finetune/deepspeed/finetune_lora_multi_gpu.ipynb).
 
+> ⚠️ **Important Note**: The original Qwen repository's code is **not compatible** with Qwen 2.5 models. This project includes necessary modifications to support Qwen 2.5. Do not use the original repository directly for Qwen 2.5 fine-tuning, as it may lead to errors or unexpected behavior.
+
 ## Overview
 
 This project implements LoRA fine-tuning for the Qwen-2.5-1.5B-Chat model using DeepSpeed with multi-GPU support. Tongyi Qianwen is a large language model developed by Alibaba Cloud based on the Transformer architecture, trained on diverse pre-training data including internet text, specialized books, and code. This implementation focuses on R1-style training using high-quality instruction datasets.
